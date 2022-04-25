@@ -1,0 +1,112 @@
+﻿@page "/DeliveryPage"
+
+@using System.Diagnostics;
+@using GartenManagement.BAL
+@using GartenManagement.Services
+@using System.ComponentModel.DataAnnotations
+@using Helper
+@inject IJSRuntime JsRuntime
+@inject LieferungServices deliveryServices
+@inject ArticleServices articleServices
+@inject LieferantServices supplierServices
+@inject NavigationManager NavigationManager
+
+<h1>Add delivery</h1>
+
+<EditForm Model="@delivery" OnValidSubmit="Submit">
+    <DataAnnotationsValidator />
+
+
+    <label><strong>select Article:</strong></label>
+    <InputSelect  @bind-Value="@delivery.selectedArticleId">
+
+        @if (articleList != null)
+        {
+
+            <option value="0">select</option>
+            @foreach (var item in articleList)
+            {
+                <option value="@item.Id">@item.Name</option>
+            }
+        }
+    </InputSelect>
+
+    <br />
+
+    <label><strong>select Supplier:</strong></label>
+    <InputSelect @bind-Value="@delivery.selectedSupplierId">
+
+        @if (supplierList != null)
+        {
+
+            <option value="0">select</option>
+            @foreach (var item in supplierList)
+            {
+                <option value="@item.Id">@item.Name / @item.Country</option>
+            }
+        }
+    </InputSelect>
+
+    <br />
+
+    <label><strong>Day of Delivery:</strong></label>
+    <InputDate id="Birthday" @bind-Value="@delivery.DayOfDelivery" />
+    <ValidationMessage For="@(() => delivery.DayOfDelivery)" />
+
+    <br /
+
+
+
+    <br />
+
+    <label><strong>Amount:</strong></label>
+    <InputNumber id="Gender" @bind-Value="@delivery.Amount" />
+    <ValidationMessage For="@(() => delivery.Amount)" />
+
+
+    <br />
+    <br />
+    <button type="submit">add delivery</button>
+</EditForm>
+
+@code {
+
+
+
+
+    private Lieferung delivery = new Lieferung();
+
+    private List<Lieferant> supplierList;
+    private List<Article> articleList;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Helper.Login.isLogin == false) { NavigationManager.NavigateTo("/"); await JsRuntime.InvokeVoidAsync("alert", "Please login first!"); return; }
+
+        supplierList = await Task.Run(() => supplierServices.GetAllAsync());
+        articleList = await Task.Run(() => articleServices.GetAllAsync());
+    }
+
+    protected async void Submit()
+    {
+        try
+        {
+            delivery.ArticleId = Convert.ToInt32(delivery.selectedArticleId);
+            delivery.LieferantId = Convert.ToInt32(delivery.selectedSupplierId);
+            await deliveryServices.UpdateAsync(delivery);
+            await JsRuntime.InvokeVoidAsync("alert", "delivery created!");
+            delivery = new Lieferung();
+            StateHasChanged();
+            NavigationManager.NavigateTo("DeliveryPage");
+        }
+        catch (Exception ex)
+        {
+            await JsRuntime.InvokeVoidAsync("alert", ex.Message);
+            return;
+        }
+
+
+
+    }
+
+}
