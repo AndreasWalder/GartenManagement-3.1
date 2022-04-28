@@ -30,6 +30,7 @@
             }
         }
     </InputSelect>
+    <ValidationMessage For="@(() => delivery.selectedArticleId)" />
 
     <br />
 
@@ -46,11 +47,12 @@
             }
         }
     </InputSelect>
+    <ValidationMessage For="@(() => delivery.selectedSupplierId)" />
 
     <br />
 
     <label><strong>Day of Delivery:</strong></label>
-    <InputDate id="Birthday" @bind-Value="@delivery.DayOfDelivery" />
+    <InputDate id="DayOfDelivery" @bind-Value="@delivery.DayOfDelivery" />
     <ValidationMessage For="@(() => delivery.DayOfDelivery)" />
 
     <br /
@@ -60,7 +62,7 @@
     <br />
 
     <label><strong>Amount:</strong></label>
-    <InputNumber id="Gender" @bind-Value="@delivery.Amount" />
+    <InputNumber id="Amount" @bind-Value="@delivery.Amount" />
     <ValidationMessage For="@(() => delivery.Amount)" />
 
 
